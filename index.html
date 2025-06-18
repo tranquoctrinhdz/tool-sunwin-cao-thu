@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunwin Cao Thủ Tài Xỉu</title>
+  <style>
+    body {
+      background-color: #1a1a1a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #ffd700;
+    }
+    input, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 5px;
+      width: 90%;
+      max-width: 400px;
+    }
+    #output, #history, #suggestion {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .result-line {
+      border-top: 1px solid #444;
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Sunwin Cao Thủ Tài Xỉu</h1>
+  <p>Nhập chuỗi kết quả (T = Tài, X = Xỉu), cách nhau bởi dấu cách:</p>
+  <input type="text" id="historyInput" placeholder="Ví dụ: X T T X X T">
+  <input type="number" id="capitalInput" placeholder="Nhập số vốn (VD: 500000)">
+  <br>
+  <button onclick="predict()">🔮 Dự Đoán</button>
+  <button onclick="markResult(true)">✅ Đúng</button>
+  <button onclick="markResult(false)">❌ Sai</button>
+  <div id="output"></div>
+  <div id="suggestion"></div>
+  <div id="history"></div>
+  <div class="footer">Cre: Trần Quốc Trịnh – Trùm Kéo Thuê Sunwin</div>
+
+  <script>
+    let historyLog = [];
+
+    function predict() {
+      const input = document.getElementById("historyInput").value.trim().toUpperCase();
+      const capital = parseInt(document.getElementById("capitalInput").value);
+      const results = input.split(" ").filter(r => r === "T" || r === "X");
+      if (results.length < 3) {
+        document.getElementById("output").innerText = "❗ Nhập ít nhất 3 kết quả gần nhất.";
+        return;
+      }
+
+      // Phân tích cầu cơ bản
+      const last = results[results.length - 1];
+      const secondLast = results[results.length - 2];
+      let prediction = "T";
+      let reason = "";
+
+      if (last === secondLast) {
+        prediction = last; // Cầu bệt
+        reason = "Cầu bệt – theo đà";
+      } else if (results.slice(-4).join("") === "TXT" || results.slice(-4).join("") === "XTX") {
+        prediction = results[results.length - 3]; // Cầu lặp
+        reason = "Cầu lặp 1-2-1 – giữ nhịp";
+      } else {
+        prediction = last === "T" ? "X" : "T"; // Gãy cầu
+        reason = "Cầu gãy – đảo chiều";
+      }
+
+      const betSuggestion = capital && !isNaN(capital) ? Math.round(capital * 0.4) : "N/A";
+
+      const text = `👉 Dự đoán: ${prediction === "T" ? "Tài" : "Xỉu"}
+🧠 Phân tích: ${reason}`;
+      const suggest = `💰 Gợi ý cược: ${betSuggestion === "N/A" ? "Vui lòng nhập vốn" : betSuggestion.toLocaleString()} đ`;
+
+      document.getElementById("output").innerText = text;
+      document.getElementById("suggestion").innerText = suggest;
+
+      historyLog.unshift(`[${results.join(" ")}] => Đoán: ${prediction}`);
+      if (historyLog.length > 10) historyLog.pop();
+
+      renderHistory();
+      document.getElementById("historyInput").value = "";
+    }
+
+    function renderHistory() {
+      const historyDiv = document.getElementById("history");
+      historyDiv.innerHTML = "<div class='result-line'><b>Lịch sử dự đoán:</b><br>" + historyLog.join("<br>") + "</div>";
+    }
+
+    function markResult(isCorrect) {
+      if (historyLog.length === 0) return;
+      historyLog[0] += isCorrect ? " ✅" : " ❌";
+      renderHistory();
+    }
+  </script>
+</body>
+</html>
